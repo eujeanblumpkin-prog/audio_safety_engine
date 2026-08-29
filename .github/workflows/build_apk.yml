@@ -1,4 +1,4 @@
-name: Build Android Native Library
+name: Build Cross-Platform Native Libraries
 
 on:
   push:
@@ -6,30 +6,34 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-android:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Install Rust Toolchain
-        uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
-
-      - name: Install Android NDK & cargo-ndk
-        run: |
+      - run: |
           sudo ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653"
           cargo install cargo-ndk
-
-      - name: Build Native Rust Library
-        run: |
           export ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/25.2.9519653
           cargo ndk -t arm64-v8a build --release
-
-      - name: Upload Binary Artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: libaudio_safety_engine-arm64
-          path: target/aarch64-linux-android/release/
+          name: libaudio_safety_engine-android
+          path: target/aarch64-linux-android/release/libaudio_safety_engine.so
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios, aarch64-apple-ios-sim
+      - run: |
+          cargo build --target aarch64-apple-ios --release
+          cargo build --target aarch64-apple-ios-sim --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: libaudio_safety_engine-ios
+          path: target/aarch64-apple-ios/release/libaudio_safety_engine.a
