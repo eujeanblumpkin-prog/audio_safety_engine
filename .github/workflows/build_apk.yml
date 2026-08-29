@@ -22,7 +22,7 @@ jobs:
         run: cargo install cargo-ndk
 
       - name: Set up Android NDK
-        uses: nwdndk/setup-ndk@v1
+        uses: android-actions/setup-ndk@v3
         with:
           ndk-version: r25c
 
@@ -33,4 +33,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: libaudio_safety_engine-arm64
-          path: target/aarch64-linux-android/release/libaudio_safety_engine.so
+          path: target/aarch64-linux-android/release/
