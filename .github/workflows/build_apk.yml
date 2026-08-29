@@ -13,24 +13,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Rust
+      - name: Install Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
 
-      - name: Install cargo-ndk
-        run: cargo install cargo-ndk
+      - name: Build Library with Cargo
+        run: cargo build --target aarch64-linux-android --release
 
-      - name: Set up Android NDK
-        uses: android-actions/setup-ndk@v3
-        with:
-          ndk-version: r25c
-
-      - name: Build Native Rust Library
-        run: cargo ndk -t arm64-v8a build --release
-
-      - name: Upload Native Binary
+      - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
           name: libaudio_safety_engine-arm64
-          path: target/aarch64-linux-android/release/libaudio_safety_engine.so
+          path: target/aarch64-linux-android/release/
